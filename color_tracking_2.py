@@ -58,6 +58,7 @@ def control():
     fb_vel = 0
     prev = [0,0,0,0]
 
+    lr_vel, fb_vel, ud_vel, J_vel = 0,0,0,0
 
     # Trackbar window
     cv2.namedWindow('Trackbars')
