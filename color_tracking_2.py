@@ -1,3 +1,4 @@
+# Import libraries
 from djitellopy import Tello 
 import cv2 
 import time 
@@ -12,12 +13,12 @@ x_threshold = int(0.10 * width)
 y_threshold = int(0.10 * height)
 
 #Valores iniciales
-H_min_init = 90
-H_max_init = 150
-S_min_init = 50 
-S_max_init = 200 
-V_min_init = 80
-V_max_init = 170
+H_min_init = 0
+H_max_init = 0
+S_min_init = 0 
+S_max_init = 0
+V_min_init = 0
+V_max_init = 0
 
 #Minimum area for object detection
 area_min = 0.05 * (width * height)
@@ -27,14 +28,17 @@ area_min = 0.05 * (width * height)
 drone = Tello()
 drone.connect()
 
+#Initializing drone stream
 drone.streamon()
 time.sleep(3)
 
+#Global drone's state variabel
 global flying
 
 def callback(x): 
     pass
 
+# Function to clean exit
 def clean_exit(): 
     print("\nCerrando el prgrama...")
 
@@ -47,17 +51,20 @@ def clean_exit():
     drone.end()
     print("Programa cerrado correctamente")
 
+# Conrol function
 def control(): 
     global flying
     flying = False 
     fb_vel = 0
+    prev = [0,0,0,0]
 
-    # Crea una ventana para las trackbars
+
+    # Trackbar window
     cv2.namedWindow('Trackbars')
-    # Define un tamaño personalizado para la ventana de trackbars
+    # Define trackbar widow size
     cv2.resizeWindow('Trackbars', 600, 250)  # Ancho = 600 píxeles, Alto = 250 píxeles
 
-    # Crea trackbars para ajustar los valores H, S, V
+    # Creating trackbars
     cv2.createTrackbar('H Min', 'Trackbars', H_min_init, 179, callback)
     cv2.createTrackbar('H Max', 'Trackbars', H_max_init, 179, callback)
     cv2.createTrackbar('S Min', 'Trackbars', S_min_init, 255, callback)
@@ -66,17 +73,19 @@ def control():
     cv2.createTrackbar('V Max', 'Trackbars', V_max_init, 255, callback)
 
     while True:
+        # Obtaining image from drone
         frame = drone.get_frame_read().frame
         if frame is None:
             continue
-        
-        frame = cv2.resize(frame, (width, height))
 
+        # Image rescaling
+        frame = cv2.resize(frame, (width, height))
+        # Imgage color conversion
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # Convierte la imagen de BGR a HSV
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-        # Obtiene los valores de las trackbars
+        # Obtaining trackbars value
         h_min = cv2.getTrackbarPos('H Min', 'Trackbars')
         s_min = cv2.getTrackbarPos('S Min', 'Trackbars')
         v_min = cv2.getTrackbarPos('V Min', 'Trackbars')
@@ -84,6 +93,7 @@ def control():
         s_max = cv2.getTrackbarPos('S Max', 'Trackbars')
         v_max = cv2.getTrackbarPos('V Max', 'Trackbars')
 
+        #HSV value arrays 
         lower_hsv = np.array([h_min, s_min, v_min])
         upper_hsv = np.array([h_max, s_max, v_max])
 
@@ -91,15 +101,16 @@ def control():
         blurred = cv2.GaussianBlur(hsv, (15, 15), 0)
         mask = cv2.inRange(blurred, lower_hsv, upper_hsv)
 
-        # Erosión y dilatación para eliminar ruido en la máscara
+        # Erosion and dilation for noise reduction
         mask = cv2.erode(mask, None, iterations=2)
         mask = cv2.dilate(mask, None, iterations=2)
 
-        # Aplica la máscara a la imagen original
+        # Apply mask on original mask
         result = cv2.bitwise_and(frame, frame, mask=mask)
 
-        contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
+        # Drawing object contorus and centroid
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > area_min: 
@@ -116,34 +127,47 @@ def control():
                     cv2.putText(frame, f'Objeto a la derecha', (10, 60), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    
+                    lr_vel = 60    
                 elif x + w//2 < width // 2 - x_threshold:
                     cv2.putText(frame, f'Objeto a la izquierda', (10, 60), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
+                    lr_vel = -60
                 else: 
                     cv2.putText(frame, f'Objeto en Rango', (10, 60), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
+                    fb_vel = 0
+                    lr_vel = 0
+                    ud_vel = 0
+                    J_vel  = 0
                     
                 #Revisar si el objeto está a la arriba de la imagen
                 if y + h//2 > height // 2 + y_threshold:
                     cv2.putText(frame, f'Objeto arriba', (10, 100), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
+                    ud_vel = 60
+                    
                     
                 elif y + h//2 < height // 2 - y_threshold:
                     cv2.putText(frame, f'Objeto abajo', (10, 100), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
+                    ud_vel = -60
+
                 else: 
                     cv2.putText(frame, f'Objeto en Rango', (10, 60), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
+                    fb_vel = 0
+                    lr_vel = 0
+                    ud_vel = 0
+                    J_vel  = 0
                 
-                    #Dibujar líneas de referencia 
-            cv2.line(frame, (width//2 - x_threshold, 0), (width//2 - x_threshold, height), (255, 0, 0), 3)
-            cv2.line(frame, (width//2 + x_threshold, 0), (width//2 + x_threshold, height), (255, 0, 0), 3)
+            #Dibujar líneas de referencia 
+            cv2.line(frame, (width//2 - x_threshold, 0), (width//2 - x_threshold, height),  (255, 0, 0), 3)
+            cv2.line(frame, (width//2 + x_threshold, 0), (width//2 + x_threshold, height),  (255, 0, 0), 3)
             cv2.line(frame, (0, height//2 - y_threshold), (width, height//2 - y_threshold), (255, 0, 0), 3)
             cv2.line(frame, (0, height//2 + y_threshold), (width, height//2 + y_threshold), (255, 0, 0), 3)
 
@@ -163,7 +187,34 @@ def control():
         
         cv2.imshow('Original', frame)
 
-        key = cv2.waitKey(1) & 0xFF
+        key = cv2.waitKey(50) & 0xFF
+
+        if key == ord('q'):
+            clean_exit()
+            break
+
+        if key == ord('t') and drone.get_battery() > 15:
+            if flying:
+                pass
+            else:
+                drone.takeoff()
+                flying = True
+
+        if key == ord('l'):
+            if flying:
+                drone.land()
+                time.sleep(5)
+                flying = False
+
+        
+        vels = [lr_vel, fb_vel, ud_vel, J_vel]
+        
+        if prev != vels and flying: 
+            drone.send_rc_control(lr_vel, fb_vel, ud_vel, J_vel)
+
+        prev = vels
+
+
 
 def main():
     try:
