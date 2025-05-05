@@ -128,12 +128,12 @@ def control():
                     cv2.putText(frame, f'Objeto a la derecha', (750, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    lr_vel = 60    
+                    lr_vel = 20    
                 elif x + w//2 < width // 2 - x_threshold:
                     cv2.putText(frame, f'Objeto a la izquierda', (750, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    lr_vel = -60
+                    lr_vel = -20
                 else: 
                     cv2.putText(frame, f'Objeto en Rango LR', (750, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
@@ -145,14 +145,14 @@ def control():
                     cv2.putText(frame, f'Objeto abajo', (10, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    ud_vel = -60
+                    ud_vel = -20
                     
                     
                 elif y + h//2 < height // 2 - y_threshold:
                     cv2.putText(frame, f'Objeto arriba', (10, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    ud_vel = 60
+                    ud_vel = 20
 
                 else: 
                     cv2.putText(frame, f'Objeto en Rango UD', (10, 80), 
