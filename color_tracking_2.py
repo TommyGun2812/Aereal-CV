@@ -13,12 +13,12 @@ x_threshold = int(0.10 * width)
 y_threshold = int(0.10 * height)
 
 #Valores iniciales
-H_min_init = 0
-H_max_init = 0
-S_min_init = 0 
-S_max_init = 0
-V_min_init = 0
-V_max_init = 0
+H_min_init = 15
+H_max_init = 94
+S_min_init = 35
+S_max_init = 147
+V_min_init = 35
+V_max_init = 154
 
 #Minimum area for object detection
 area_min = 0.05 * (width * height)
