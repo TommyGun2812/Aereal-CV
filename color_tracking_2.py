@@ -69,7 +69,9 @@ def control():
         frame = drone.get_frame_read().frame
         if frame is None:
             continue
-
+        
+        frame = cv2.resize(frame, (width, height))
+        
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # Convierte la imagen de BGR a HSV
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
