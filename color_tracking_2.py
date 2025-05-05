@@ -125,23 +125,20 @@ def control():
 
                 #Revisar si el objeto está a la derecha de la imagen
                 if x + w//2 > width // 2 + x_threshold:
-                    cv2.putText(frame, f'Objeto a la derecha', (10, 60), 
+                    cv2.putText(frame, f'Objeto a la derecha', (10, 100), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     lr_vel = 60    
                 elif x + w//2 < width // 2 - x_threshold:
-                    cv2.putText(frame, f'Objeto a la izquierda', (10, 60), 
+                    cv2.putText(frame, f'Objeto a la izquierda', (10, 100), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     lr_vel = -60
                 else: 
-                    cv2.putText(frame, f'Objeto en Rango', (10, 60), 
+                    cv2.putText(frame, f'Objeto en Rango LR', (10, 100), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    fb_vel = 0
                     lr_vel = 0
-                    ud_vel = 0
-                    J_vel  = 0
                     
                 #Revisar si el objeto está a la arriba de la imagen
                 if y + h//2 > height // 2 + y_threshold:
@@ -158,13 +155,10 @@ def control():
                     ud_vel = 60
 
                 else: 
-                    cv2.putText(frame, f'Objeto en Rango', (10, 80), 
+                    cv2.putText(frame, f'Objeto en Rango UD', (10, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    fb_vel = 0
-                    lr_vel = 0
                     ud_vel = 0
-                    J_vel  = 0
                 
             #Dibujar líneas de referencia 
             cv2.line(frame, (width//2 - x_threshold, 0), (width//2 - x_threshold, height),  (255, 0, 0), 3)
@@ -182,7 +176,7 @@ def control():
         
         if drone.get_height() > 0: Marco = "Volando"
         else: Marco = "Detenido"
-        cv2.putText(frame, f'Estado: {Marco}cm',
+        cv2.putText(frame, f'Estado: {Marco}',
                     (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 1,
                     (0, 255, 0), 2)
         
