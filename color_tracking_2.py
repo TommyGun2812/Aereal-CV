@@ -71,7 +71,7 @@ def control():
             continue
         
         frame = cv2.resize(frame, (width, height))
-        
+
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # Convierte la imagen de BGR a HSV
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -162,8 +162,6 @@ def control():
                     (0, 255, 0), 2)
         
         cv2.imshow('Original', frame)
-        cv2.imshow('Mask', mask)
-        cv2.imshow('Filtrado', result)
 
         key = cv2.waitKey(1) & 0xFF
 
