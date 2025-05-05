@@ -125,17 +125,17 @@ def control():
 
                 #Revisar si el objeto está a la derecha de la imagen
                 if x + w//2 > width // 2 + x_threshold:
-                    cv2.putText(frame, f'Objeto a la derecha', (10, 100), 
+                    cv2.putText(frame, f'Objeto a la derecha', (750, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     lr_vel = 60    
                 elif x + w//2 < width // 2 - x_threshold:
-                    cv2.putText(frame, f'Objeto a la izquierda', (10, 100), 
+                    cv2.putText(frame, f'Objeto a la izquierda', (750, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     lr_vel = -60
                 else: 
-                    cv2.putText(frame, f'Objeto en Rango LR', (10, 100), 
+                    cv2.putText(frame, f'Objeto en Rango LR', (750, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     lr_vel = 0
