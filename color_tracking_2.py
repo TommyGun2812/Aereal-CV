@@ -148,14 +148,14 @@ def control():
                     cv2.putText(frame, f'Objeto abajo', (10, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    ud_vel = 60
+                    ud_vel = -60
                     
                     
                 elif y + h//2 < height // 2 - y_threshold:
                     cv2.putText(frame, f'Objeto arriba', (10, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    ud_vel = -60
+                    ud_vel = 60
 
                 else: 
                     cv2.putText(frame, f'Objeto en Rango', (10, 80), 
