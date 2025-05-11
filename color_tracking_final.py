@@ -15,7 +15,7 @@ y_threshold = int(0.10 * height)
 #Valores iniciales
 H_min_init = 15
 H_max_init = 94
-S_min_init = 35
+S_min_init = 92
 S_max_init = 147
 V_min_init = 35
 V_max_init = 154
@@ -115,6 +115,9 @@ def control():
         for contour in contours:
             area = cv2.contourArea(contour)
             if area > area_min: 
+                cv2.putText(frame, f'Area: {area}', (600, 300), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 1, 
+                                (0, 255, 0), 2)
                 cv2.drawContours(frame, contour, -1, (255, 0, 255), 7)
                 perimeter = cv2.arcLength(contour, True)
                 approx = cv2.approxPolyDP(contour, 0.02 * perimeter, True)
@@ -123,41 +126,41 @@ def control():
                 center = (x + w // 2, y + h // 2)
                 cv2.circle(frame, center, 5, (0, 0, 255), cv2.FILLED)
 
-                cv2.putText(frame, f'X', (750, 80), 
+                cv2.putText(frame, f'W: {w}', (10, 300), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                 
-                cv2.putText(frame, f'Y', (750, 80), 
+                cv2.putText(frame, f'H: {h}', (10, 400), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
 
                 #Revisar si el objeto está a la derecha de la imagen
                 if x + w//2 > width // 2 + x_threshold:
-                    cv2.putText(frame, f'Objeto a la derecha', (750, 80), 
+                    cv2.putText(frame, f'Objeto a la derecha', (600, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    lr_vel = 20    
+                    J_vel = 20    
                 elif x + w//2 < width // 2 - x_threshold:
-                    cv2.putText(frame, f'Objeto a la izquierda', (750, 80), 
+                    cv2.putText(frame, f'Objeto a la izquierda', (600, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    lr_vel = -20
+                    J_vel = -20
                 else: 
-                    cv2.putText(frame, f'Objeto en Rango LR', (750, 80), 
+                    cv2.putText(frame, f'Objeto en Rango LR', (650, 80), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
-                    lr_vel = 0
+                    J_vel = 0
                     
                 #Revisar si el objeto está a la arriba de la imagen
                 if y + h//2 > height // 2 + y_threshold:
-                    cv2.putText(frame, f'Objeto abajo', (10, 80), 
+                    cv2.putText(frame, f'Objeto abajo', (10, 200), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     ud_vel = -20
                     
                     
                 elif y + h//2 < height // 2 - y_threshold:
-                    cv2.putText(frame, f'Objeto arriba', (10, 80), 
+                    cv2.putText(frame, f'Objeto arriba', (10, 200), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     ud_vel = 20
@@ -167,6 +170,15 @@ def control():
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, 
                                 (0, 255, 0), 2)
                     ud_vel = 0
+
+                if 200 < w <= 380 and 200 < h <= 380:
+                    fb_vel = 20
+
+                elif 420 < w  and 420 < h :
+                    fb_vel = -20  
+
+                else:
+                    fb_vel = 0
                 
             #Dibujar líneas de referencia 
             cv2.line(frame, (width//2 - x_threshold, 0), (width//2 - x_threshold, height),  (255, 0, 0), 3)
@@ -190,7 +202,7 @@ def control():
         
         cv2.imshow('Original', frame)
 
-        key = cv2.waitKey(50) & 0xFF
+        key = cv2.waitKey(10) & 0xFF
 
         if key == ord('q'):
             clean_exit()
@@ -227,4 +239,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
